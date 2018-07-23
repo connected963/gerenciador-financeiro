@@ -15,9 +15,9 @@ public interface LocalArmazenamentoValorRepository extends JpaRepository<LocalAr
             "where localArmazenamento.localArmazenamento.id = :armazenamentoId")
     List<LocalArmazenamentoValor> buscarTodosPorLocalArmazenamentoId(@Param("armazenamentoId") Long armazenamentoId);
 
-    @Query("select localArmazenamento.valor from LocalArmazenamentoValor localArmazenamento " +
-            "where localArmazenamento.localArmazenamento.id = :localArmazenamentoId " +
-            "order by localArmazenamento.id")
+    @Query(value = "select valor from local_armazenamento_valor " +
+            "where local_armazenamento_id = :localArmazenamentoId " +
+            "order by id desc limit 1", nativeQuery = true)
     Double buscarUltimoValorPorLocalArmazenamentoId(@Param("localArmazenamentoId") Long localArmazenamentoId);
 
 }
