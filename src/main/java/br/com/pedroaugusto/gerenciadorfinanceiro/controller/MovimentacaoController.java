@@ -2,7 +2,6 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.controller;
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.movimentacao.MovimentacaoInputModel;
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.movimentacao.MovimentacaoService;
-import br.com.pedroaugusto.gerenciadorfinanceiro.common.exception.BusinessException;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.movimentacao.Movimentacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +27,12 @@ public class MovimentacaoController {
 
     @GetMapping("/movimentacao/{movimentacaoId}")
     public Movimentacao buscarPorId(@PathVariable final Long movimentacaoId) {
-        return movimentacaoService.buscarPorId(movimentacaoId)
-                .orElseThrow(() -> new BusinessException(MovimentacaoService.MOVIMENTACAO_INEXISTENTE));
+        return movimentacaoService.buscarPorId(movimentacaoId);
     }
 
     @PostMapping("/movimentacao")
-    public ResponseEntity inserir(@Valid @RequestBody final MovimentacaoInputModel movimentacao) {
+    public void inserir(@Valid @RequestBody final MovimentacaoInputModel movimentacao) {
         movimentacaoService.inserir(movimentacao);
-
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/movimentacao")

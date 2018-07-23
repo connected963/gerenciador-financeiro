@@ -1,15 +1,18 @@
 package br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamentovalor;
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamento.LocalArmazenamento;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "local_armazenamento_valor")
-public class LocalArmazenamentoValor {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class LocalArmazenamentoValor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,7 +30,7 @@ public class LocalArmazenamentoValor {
     @ManyToOne
     private LocalArmazenamento localArmazenamento;
 
-    private LocalArmazenamentoValor() {
+    LocalArmazenamentoValor() {
 
     }
 

@@ -10,26 +10,20 @@ import java.util.Objects;
 
 public class LocalArmazenamentoValorInputModel {
 
-    private final Long id;
+    private Long id;
 
     @NotNull(message = "localarmazenamentovalor.valor.null")
     @Min(value = 0, message = "localarmazenamentovalor.valor.min")
-    private final Double valor;
+    private Double valor;
 
-    @JsonFormat(pattern = "dd/MM/YYYY HH:mm")
+    @JsonFormat(pattern = "dd/MM/yyyy@HH:mm", shape = JsonFormat.Shape.STRING)
     @NotNull(message = "localarmazenamentovalor.data.null")
-    private final LocalDateTime data;
+    private LocalDateTime data;
 
     @NotNull(message = "localarmazenamentovalor.localArmazenamentoId.null")
-    private final Long localArmazenamentoId;
+    private Long localArmazenamentoId;
 
-    public LocalArmazenamentoValorInputModel(final Long id, final Double valor,
-                                             final LocalDateTime data,
-                                             final Long localArmazenamentoId) {
-        this.id = id;
-        this.valor = valor;
-        this.data = data;
-        this.localArmazenamentoId = localArmazenamentoId;
+    private LocalArmazenamentoValorInputModel() {
     }
 
     @Override

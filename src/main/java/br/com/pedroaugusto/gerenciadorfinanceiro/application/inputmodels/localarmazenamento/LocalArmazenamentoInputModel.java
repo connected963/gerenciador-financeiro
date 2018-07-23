@@ -1,22 +1,20 @@
 package br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.localarmazenamento;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 public class LocalArmazenamentoInputModel {
 
-    private final Long id;
+    private Long id;
 
     @NotBlank(message = "localarmazenamento.nome.blank")
-    @Max(value = 200, message = "localarmazenamento.nome.max")
-    private final String nome;
+    @Length(max = 200, message = "localarmazenamento.nome.max")
+    private String nome;
 
-    LocalArmazenamentoInputModel(final Long id, final String nome) {
-        this.id = id;
-        this.nome = nome;
+    private LocalArmazenamentoInputModel() {
     }
 
     @Override
@@ -37,8 +35,16 @@ public class LocalArmazenamentoInputModel {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     @Override

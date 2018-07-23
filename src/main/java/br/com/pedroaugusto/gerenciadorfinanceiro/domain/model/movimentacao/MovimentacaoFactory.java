@@ -11,9 +11,17 @@ public class MovimentacaoFactory {
     }
 
     public static Movimentacao criarNova(final TipoMovimentacao tipo,
+                                         final Double valor,
                                          final LocalArmazenamento localArmazenamento,
                                          final Boolean repetirMensalmente) {
-        return new Movimentacao(tipo, localArmazenamento, repetirMensalmente);
+        return new Movimentacao(tipo, valor, localArmazenamento, repetirMensalmente);
+    }
+
+    public static Movimentacao criaPorInputModel(final MovimentacaoInputModel movimentacaoInputModel) {
+
+        return new Movimentacao(movimentacaoInputModel.getId(),
+                movimentacaoInputModel.getTipo(), movimentacaoInputModel.getValor(),
+                null, movimentacaoInputModel.getRepetirMensalmente());
     }
 
     public static Movimentacao criaPorInputModelComLocalArmazenamento(
@@ -21,7 +29,7 @@ public class MovimentacaoFactory {
             final LocalArmazenamento localArmazenamento) {
 
         return new Movimentacao(movimentacaoInputModel.getId(),
-                movimentacaoInputModel.getTipo(), localArmazenamento,
-                movimentacaoInputModel.getRepetirMensalmente());
+                movimentacaoInputModel.getTipo(), movimentacaoInputModel.getValor(),
+                localArmazenamento, movimentacaoInputModel.getRepetirMensalmente());
     }
 }

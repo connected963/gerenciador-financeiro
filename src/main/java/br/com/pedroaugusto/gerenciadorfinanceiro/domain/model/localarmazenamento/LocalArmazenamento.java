@@ -1,15 +1,16 @@
 package br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamento;
 
-import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamentovalor.LocalArmazenamentoValor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "local_armazenamento")
-public class LocalArmazenamento {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class LocalArmazenamento implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,11 +21,7 @@ public class LocalArmazenamento {
     @Column
     private String nome;
 
-    @ElementCollection
-    @CollectionTable(name = "local_armazenamento_valor")
-    private List<LocalArmazenamentoValor> valores;
-
-    private LocalArmazenamento() {
+    LocalArmazenamento() {
 
     }
 
@@ -65,22 +62,6 @@ public class LocalArmazenamento {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public List<LocalArmazenamentoValor> getValores() {
-        return List.copyOf(valores);
-    }
-
-    public void setValores(List<LocalArmazenamentoValor> valores) {
-        this.valores = valores;
-    }
-
-    public void adicionaValor(final LocalArmazenamentoValor localArmazenamentoValor) {
-        valores.add(localArmazenamentoValor);
-    }
-
-    public void removeValor(final Long localArmazenamentoValorId) {
-//        valores.remove(localArmazenamentoValor);
     }
 
     @Override

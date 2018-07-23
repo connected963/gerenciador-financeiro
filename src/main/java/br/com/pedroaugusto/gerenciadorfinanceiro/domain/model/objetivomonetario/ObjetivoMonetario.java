@@ -1,14 +1,17 @@
 package br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.objetivomonetario;
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamento.LocalArmazenamento;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "objetivo_monetario")
-public class ObjetivoMonetario {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class ObjetivoMonetario implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +26,7 @@ public class ObjetivoMonetario {
     @JoinColumn
     private LocalArmazenamento localArmazenamento;
 
-    private ObjetivoMonetario() {
+    ObjetivoMonetario() {
 
     }
 

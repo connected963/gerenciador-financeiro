@@ -2,7 +2,6 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.controller;
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.localarmazenamentovalor.LocalArmazenamentoValorInputModel;
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.localarmazenamentovalor.LocalArmazenamentoValorService;
-import br.com.pedroaugusto.gerenciadorfinanceiro.common.exception.BusinessException;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamentovalor.LocalArmazenamentoValor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,16 +28,13 @@ public class LocalArmazenamentoValorController {
 
     @GetMapping("/localarmazenamento/valor/{localArmazenamentoValorId}")
     public LocalArmazenamentoValor buscarPorId(@PathVariable final Long localArmazenamentoValorId) {
-        return localArmazenamentoValorService.buscarPorId(localArmazenamentoValorId)
-                .orElseThrow(() -> new BusinessException(LocalArmazenamentoValorService.LOCAL_ARMAZENAMENTO_VALOR_INEXISTENTE));
+        return localArmazenamentoValorService.buscarPorId(localArmazenamentoValorId);
     }
 
     @PostMapping("/localarmazenamento/valor")
-    public ResponseEntity inserir(
+    public void inserir(
             @Valid @RequestBody final LocalArmazenamentoValorInputModel localArmazenamentoValor) {
         localArmazenamentoValorService.inserir(localArmazenamentoValor);
-
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/localarmazenamento/valor")

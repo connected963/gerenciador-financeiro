@@ -2,14 +2,17 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.movimentacao;
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.common.enums.TipoMovimentacao;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamento.LocalArmazenamento;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "movimentacao")
-public class Movimentacao {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Movimentacao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,6 +24,9 @@ public class Movimentacao {
     @Enumerated(EnumType.STRING)
     private TipoMovimentacao tipo;
 
+    @Column
+    private Double valor;
+
     @JoinColumn
     @ManyToOne
     private LocalArmazenamento localArmazenamento;
@@ -28,21 +34,23 @@ public class Movimentacao {
     @Column
     private Boolean repetirMensalmente;
 
-    private Movimentacao() {
+    Movimentacao() {
 
     }
 
     Movimentacao(final TipoMovimentacao tipo,
+                 final Double valor,
                  final LocalArmazenamento localArmazenamento,
                  final Boolean repetirMensalmente) {
-        this(null, tipo, localArmazenamento, repetirMensalmente);
+        this(null, tipo, valor, localArmazenamento, repetirMensalmente);
     }
 
     Movimentacao(final Long id, final TipoMovimentacao tipo,
-                 final LocalArmazenamento localArmazenamento,
+                 final Double valor, final LocalArmazenamento localArmazenamento,
                  final Boolean repetirMensalmente) {
         this.id = id;
         this.tipo = tipo;
+        this.valor = valor;
         this.localArmazenamento = localArmazenamento;
         this.repetirMensalmente = repetirMensalmente;
     }
@@ -54,13 +62,14 @@ public class Movimentacao {
         Movimentacao that = (Movimentacao) o;
         return Objects.equals(id, that.id) &&
                 tipo == that.tipo &&
+                Objects.equals(valor, that.valor) &&
                 Objects.equals(localArmazenamento, that.localArmazenamento) &&
                 Objects.equals(repetirMensalmente, that.repetirMensalmente);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tipo, localArmazenamento, repetirMensalmente);
+        return Objects.hash(id, tipo, valor, localArmazenamento, repetirMensalmente);
     }
 
     public Long getId() {
@@ -77,6 +86,14 @@ public class Movimentacao {
 
     public void setTipo(TipoMovimentacao tipo) {
         this.tipo = tipo;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
     public LocalArmazenamento getLocalArmazenamento() {
@@ -100,6 +117,7 @@ public class Movimentacao {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("tipo", tipo)
+                .append("valor", valor)
                 .append("localArmazenamento", localArmazenamento)
                 .append("repetirMensalmente", repetirMensalmente)
                 .toString();

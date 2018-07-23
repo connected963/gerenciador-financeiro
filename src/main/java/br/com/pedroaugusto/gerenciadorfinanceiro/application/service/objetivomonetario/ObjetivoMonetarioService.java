@@ -2,7 +2,6 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.application.service.objetivomo
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.objetivomonetario.ObjetivoMonetarioInputModel;
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.localarmazenamento.LocalArmazenamentoService;
-import br.com.pedroaugusto.gerenciadorfinanceiro.common.exception.BusinessException;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.objetivomonetario.ObjetivoMonetario;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.objetivomonetario.ObjetivoMonetarioFactory;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.validator.objetivomonetario.ObjetivoMonetarioAtualizarValidador;
@@ -12,12 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class ObjetivoMonetarioService {
-
-    public static final String OBJETIVO_MONETARIO_INEXISTENTE = "objetivomonetario.null";
 
     private final ObjetivoMonetarioRepository objetivoMonetarioRepository;
 
@@ -34,10 +30,10 @@ public class ObjetivoMonetarioService {
         return objetivoMonetarioRepository.findAll();
     }
 
-    public Optional<ObjetivoMonetario> buscarPorId(final Long id) {
+    public ObjetivoMonetario buscarPorId(final Long id) {
         Objects.requireNonNull(id, "Id não pode ser null");
 
-        return Optional.of(objetivoMonetarioRepository.getOne(id));
+        return objetivoMonetarioRepository.getOne(id);
     }
 
     public void inserir(final ObjetivoMonetarioInputModel objetivoMonetarioInputModel) {
@@ -52,8 +48,8 @@ public class ObjetivoMonetarioService {
     }
 
     private void inserirPorInputModel(final ObjetivoMonetarioInputModel objetivoMonetarioInputModel) {
-        final var localArmazenamento = localArmazenamentoService.buscarPorId(objetivoMonetarioInputModel.getId())
-                .orElseThrow(() -> new BusinessException(LocalArmazenamentoService.LOCAL_ARMAZENAMENTO_INEXISTENTE));
+        final var localArmazenamento = localArmazenamentoService.buscarPorId(
+                objetivoMonetarioInputModel.getLocalArmazenamentoId());
         final var objetivoMonetario = ObjetivoMonetarioFactory.criaPorInputModelComLocalArmazenamento(
                 objetivoMonetarioInputModel, localArmazenamento);
 

@@ -10,18 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class LocalArmazenamentoService {
 
-    public static final String LOCAL_ARMAZENAMENTO_INEXISTENTE = "localarmazenamento.null";
-
     private final LocalArmazenamentoRepository localArmazenamentoRepository;
 
     @Autowired
-    public LocalArmazenamentoService(
-            final LocalArmazenamentoRepository localArmazenamentoRepository) {
+    public LocalArmazenamentoService(final LocalArmazenamentoRepository localArmazenamentoRepository) {
         this.localArmazenamentoRepository = localArmazenamentoRepository;
     }
 
@@ -29,10 +25,10 @@ public class LocalArmazenamentoService {
         return localArmazenamentoRepository.findAll();
     }
 
-    public Optional<LocalArmazenamento> buscarPorId(final Long id) {
+    public LocalArmazenamento buscarPorId(final Long id) {
         Objects.requireNonNull(id, "Id não pode ser null");
 
-        return Optional.of(localArmazenamentoRepository.getOne(id));
+        return localArmazenamentoRepository.getOne(id);
     }
 
     public void inserir(final LocalArmazenamentoInputModel localArmazenamentoInputModel) {

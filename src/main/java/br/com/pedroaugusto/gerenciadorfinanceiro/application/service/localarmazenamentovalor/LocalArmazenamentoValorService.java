@@ -2,21 +2,19 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.application.service.localarmaz
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.localarmazenamentovalor.LocalArmazenamentoValorInputModel;
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.localarmazenamento.LocalArmazenamentoService;
-import br.com.pedroaugusto.gerenciadorfinanceiro.common.exception.BusinessException;
+import br.com.pedroaugusto.gerenciadorfinanceiro.domain.action.localarmazenamentovalor.CalcularValorLocalArmazenamento;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamentovalor.LocalArmazenamentoValor;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamentovalor.LocalArmazenamentoValorFactory;
+import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.movimentacao.Movimentacao;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.validator.localarmazenamentovalor.LocalArmazenamentoValorAtualizarValidador;
 import br.com.pedroaugusto.gerenciadorfinanceiro.infrastructure.repository.LocalArmazenamentoValorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class LocalArmazenamentoValorService {
-
-    public static final String LOCAL_ARMAZENAMENTO_VALOR_INEXISTENTE = "localarmazenamentovalor.null";
 
     private final LocalArmazenamentoValorRepository localArmazenamentoValorRepository;
 
@@ -33,10 +31,14 @@ public class LocalArmazenamentoValorService {
         return localArmazenamentoValorRepository.buscarTodosPorLocalArmazenamentoId(localArmazenamentoId);
     }
 
-    public Optional<LocalArmazenamentoValor> buscarPorId(final Long id) {
+    public LocalArmazenamentoValor buscarPorId(final Long id) {
         Objects.requireNonNull(id, "Id não pode ser null");
 
-        return Optional.of(localArmazenamentoValorRepository.getOne(id));
+        return localArmazenamentoValorRepository.getOne(id);
+    }
+
+    public void salvar(final LocalArmazenamentoValor localArmazenamentoValor) {
+        localArmazenamentoValorRepository.save(localArmazenamentoValor);
     }
 
     public void inserir(
@@ -54,8 +56,7 @@ public class LocalArmazenamentoValorService {
 
     private void salvarPorInputModel(final LocalArmazenamentoValorInputModel localArmazenamentoValorInputModel) {
         final var localArmazenamento = localArmazenamentoService
-                .buscarPorId(localArmazenamentoValorInputModel.getLocalArmazenamentoId())
-                .orElseThrow(() -> new BusinessException(LocalArmazenamentoService.LOCAL_ARMAZENAMENTO_INEXISTENTE));
+                .buscarPorId(localArmazenamentoValorInputModel.getLocalArmazenamentoId());
         final var localArmazenamentoValor = LocalArmazenamentoValorFactory.criaPorInputModelComLocalArmazenamento(
                 localArmazenamentoValorInputModel, localArmazenamento);
 
@@ -64,5 +65,30 @@ public class LocalArmazenamentoValorService {
 
     public void remover(final Long id) {
         localArmazenamentoValorRepository.deleteById(id);
+    }
+
+    public Double buscarAtualValorPorLocalArmazenamento(final Long localArmazenamentoId) {
+        Objects.requireNonNull(localArmazenamentoId, "localArmazenamentoId não pode ser null");
+
+        final var valorAtual = localArmazenamentoValorRepository
+                .buscarUltimoValorPorLocalArmazenamentoId(localArmazenamentoId);
+
+        return valorAtual != null ? valorAtual : 0.0;
+    }
+
+    public void atualizarValorPorMovimentacao(final Movimentacao movimentacaoAtualizada,
+                                              final Movimentacao movimentacaoOriginal) {
+        final var localArmazenamento = movimentacaoAtualizada.getLocalArmazenamento();
+        final var valorAtual = buscarAtualValorPorLocalArmazenamento(
+                localArmazenamento.getId());
+
+        final var calculoNovoValor = new CalcularValorLocalArmazenamento();
+        final var valorAtualizado = calculoNovoValor.calcularPorMovimentacao(valorAtual,
+                movimentacaoAtualizada, movimentacaoOriginal);
+
+        final var localArmazenamentoValor = LocalArmazenamentoValorFactory.criarNovo(valorAtualizado,
+                localArmazenamento);
+
+        salvar(localArmazenamentoValor);
     }
 }

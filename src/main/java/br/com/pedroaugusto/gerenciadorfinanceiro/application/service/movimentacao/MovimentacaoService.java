@@ -2,7 +2,8 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.application.service.movimentac
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.movimentacao.MovimentacaoInputModel;
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.localarmazenamento.LocalArmazenamentoService;
-import br.com.pedroaugusto.gerenciadorfinanceiro.common.exception.BusinessException;
+import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.localarmazenamentovalor.LocalArmazenamentoValorService;
+import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.localarmazenamento.LocalArmazenamento;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.movimentacao.Movimentacao;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.movimentacao.MovimentacaoFactory;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.validator.movimentacao.MovimentacaoAtualizarValidador;
@@ -12,32 +13,33 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class MovimentacaoService {
-
-    public static final String MOVIMENTACAO_INEXISTENTE = "movimentacao.null";
 
     private final MovimentacaoRepository movimentacaoRepository;
 
     private final LocalArmazenamentoService localArmazenamentoService;
 
+    private final LocalArmazenamentoValorService localArmazenamentoValorService;
+
     @Autowired
     public MovimentacaoService(final MovimentacaoRepository movimentacaoRepository,
-                               final LocalArmazenamentoService localArmazenamentoService) {
+                               final LocalArmazenamentoService localArmazenamentoService,
+                               final LocalArmazenamentoValorService localArmazenamentoValorService) {
         this.movimentacaoRepository = movimentacaoRepository;
         this.localArmazenamentoService = localArmazenamentoService;
+        this.localArmazenamentoValorService = localArmazenamentoValorService;
     }
 
     public List<Movimentacao> buscarTodos() {
         return movimentacaoRepository.findAll();
     }
 
-    public Optional<Movimentacao> buscarPorId(final Long id) {
+    public Movimentacao buscarPorId(final Long id) {
         Objects.requireNonNull(id, "Id não pode ser null");
 
-        return Optional.of(movimentacaoRepository.getOne(id));
+        return movimentacaoRepository.getOne(id);
     }
 
     public void inserir(final MovimentacaoInputModel movimentacaoInputModel) {
@@ -52,12 +54,44 @@ public class MovimentacaoService {
     }
 
     private void inserirPorInputModel(final MovimentacaoInputModel movimentacaoInputModel) {
-        final var localArmazenamento = localArmazenamentoService.buscarPorId(movimentacaoInputModel.getId())
-                .orElseThrow(() -> new BusinessException(MovimentacaoService.MOVIMENTACAO_INEXISTENTE));
-        final var movimentacao = MovimentacaoFactory.criaPorInputModelComLocalArmazenamento(
-                movimentacaoInputModel, localArmazenamento);
+        final var localArmazenamentoId = movimentacaoInputModel.getLocalArmazenamentoId();
+        final Movimentacao movimentacao;
+
+        if (localArmazenamentoId != null) {
+            movimentacao = criaMovimentacaoComLocalArmazenamento(movimentacaoInputModel);
+            atualizarValorLocalArmazenamento(movimentacao);
+        } else {
+            movimentacao = criaMovimentacao(movimentacaoInputModel);
+        }
 
         movimentacaoRepository.save(movimentacao);
+    }
+
+    private Movimentacao criaMovimentacaoComLocalArmazenamento(
+            final MovimentacaoInputModel movimentacaoInputModel) {
+        final var localArmazenamentoId = movimentacaoInputModel.getLocalArmazenamentoId();
+        final var localArmazenamento = buscaLocalArmazenamento(localArmazenamentoId);
+
+        return MovimentacaoFactory.criaPorInputModelComLocalArmazenamento(
+                movimentacaoInputModel, localArmazenamento);
+    }
+
+    private Movimentacao criaMovimentacao(final MovimentacaoInputModel movimentacaoInputModel) {
+        return MovimentacaoFactory.criaPorInputModel(movimentacaoInputModel);
+    }
+
+    private LocalArmazenamento buscaLocalArmazenamento(final Long localArmazenamentoId) {
+        return localArmazenamentoId != null ?
+                localArmazenamentoService.buscarPorId(localArmazenamentoId) : null;
+    }
+
+    private void atualizarValorLocalArmazenamento(final Movimentacao movimentacaoAtualizada) {
+        final var movimentacaoId = movimentacaoAtualizada.getId();
+        final var movimentacaoOriginal =
+                movimentacaoId != null ? buscarPorId(movimentacaoId) : null;
+
+        localArmazenamentoValorService.atualizarValorPorMovimentacao(movimentacaoAtualizada,
+                movimentacaoOriginal);
     }
 
     public void remover(final Long id) {

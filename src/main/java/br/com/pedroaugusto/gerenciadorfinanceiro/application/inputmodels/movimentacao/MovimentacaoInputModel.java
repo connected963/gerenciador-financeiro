@@ -8,24 +8,20 @@ import java.util.Objects;
 
 public class MovimentacaoInputModel {
 
-    private final Long id;
+    private Long id;
 
     @NotNull(message = "movimentacao.tipo.null")
-    private final TipoMovimentacao tipo;
+    private TipoMovimentacao tipo;
 
-    @NotNull(message = "movimentacao.localarmazenamento.null")
-    private final Long localArmazenamentoId;
+    @NotNull(message = "movimentacao.valor.null")
+    private Double valor;
+
+    private Long localArmazenamentoId;
 
     @NotNull(message = "movimentacao.repetirmensalmente.null")
-    private final Boolean repetirMensalmente;
+    private Boolean repetirMensalmente;
 
-    public MovimentacaoInputModel(final Long id, final TipoMovimentacao tipo,
-                                  final Long localArmazenamentoId,
-                                  final Boolean repetirMensalmente) {
-        this.id = id;
-        this.tipo = tipo;
-        this.localArmazenamentoId = localArmazenamentoId;
-        this.repetirMensalmente = repetirMensalmente;
+    private MovimentacaoInputModel() {
     }
 
     @Override
@@ -35,13 +31,14 @@ public class MovimentacaoInputModel {
         MovimentacaoInputModel that = (MovimentacaoInputModel) o;
         return Objects.equals(id, that.id) &&
                 tipo == that.tipo &&
+                Objects.equals(valor, that.valor) &&
                 Objects.equals(localArmazenamentoId, that.localArmazenamentoId) &&
                 Objects.equals(repetirMensalmente, that.repetirMensalmente);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tipo, localArmazenamentoId, repetirMensalmente);
+        return Objects.hash(id, tipo, valor, localArmazenamentoId, repetirMensalmente);
     }
 
     public Long getId() {
@@ -50,6 +47,14 @@ public class MovimentacaoInputModel {
 
     public TipoMovimentacao getTipo() {
         return tipo;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
     public Long getLocalArmazenamentoId() {
@@ -65,6 +70,7 @@ public class MovimentacaoInputModel {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("tipo", tipo)
+                .append("valor", valor)
                 .append("localArmazenamentoId", localArmazenamentoId)
                 .append("repetirMensalmente", repetirMensalmente)
                 .toString();

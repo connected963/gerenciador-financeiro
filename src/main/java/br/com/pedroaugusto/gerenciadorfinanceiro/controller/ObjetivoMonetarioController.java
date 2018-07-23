@@ -2,16 +2,14 @@ package br.com.pedroaugusto.gerenciadorfinanceiro.controller;
 
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.inputmodels.objetivomonetario.ObjetivoMonetarioInputModel;
 import br.com.pedroaugusto.gerenciadorfinanceiro.application.service.objetivomonetario.ObjetivoMonetarioService;
-import br.com.pedroaugusto.gerenciadorfinanceiro.common.exception.BusinessException;
 import br.com.pedroaugusto.gerenciadorfinanceiro.domain.model.objetivomonetario.ObjetivoMonetario;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController("/objetivomonetario")
+@RestController
 public class ObjetivoMonetarioController {
 
     private final ObjetivoMonetarioService objetivoMonetarioService;
@@ -29,16 +27,13 @@ public class ObjetivoMonetarioController {
     @GetMapping("/objetivomonetario/{objetivoMonetarioId}")
     public ObjetivoMonetario buscarPorId(
             @PathVariable final Long objetivoMonetarioId) {
-        return objetivoMonetarioService.buscarPorId(objetivoMonetarioId)
-                .orElseThrow(() -> new BusinessException(ObjetivoMonetarioService.OBJETIVO_MONETARIO_INEXISTENTE));
+        return objetivoMonetarioService.buscarPorId(objetivoMonetarioId);
     }
 
     @PostMapping("/objetivomonetario")
-    public ResponseEntity inserir(
+    public void inserir(
             @Valid @RequestBody final ObjetivoMonetarioInputModel objetivoMonetario) {
         objetivoMonetarioService.inserir(objetivoMonetario);
-
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/objetivomonetario")

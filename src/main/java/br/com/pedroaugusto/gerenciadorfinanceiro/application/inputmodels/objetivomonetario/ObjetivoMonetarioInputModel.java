@@ -8,19 +8,17 @@ import java.util.Objects;
 
 public class ObjetivoMonetarioInputModel {
 
-    private final Long id;
+    private Long id;
 
     @NotNull(message = "objetivomonetario.valor.null")
     @Min(value = 0, message = "objetivomonetario.valor.min")
-    private final Double valor;
+    private Double valor;
 
     @NotNull(message = "objetivomonetario.localarmazenamentoid.null")
-    private final Long localArmazenamentoId;
+    private Long localArmazenamentoId;
 
-    public ObjetivoMonetarioInputModel(final Long id, final Double valor, final Long localArmazenamentoId) {
-        this.id = id;
-        this.valor = valor;
-        this.localArmazenamentoId = localArmazenamentoId;
+    private ObjetivoMonetarioInputModel() {
+
     }
 
     @Override
